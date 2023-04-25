@@ -60,14 +60,15 @@ export default function Home({ textDict, source } ) {
       const n = desiredSentenceIdxs.length;
       const randomNewIdx = Math.floor(Math.random() * n);
       const words = sourceText[desiredSentenceIdxs[randomNewIdx]].split(' ');
-      console.log("found key so should be switching phrase, new words", words);
       setCurrPhrase(words);
       setChosenWordCounter(currCounter => currCounter + 1);
     }
   }
 
+ var regex = /[!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~]/g;
+
   const dynamicText = currPhrase.map((word, index) => {
-      const isHighlighted = word === chosenWord;
+      const isHighlighted = word.replace(regex, '') === chosenWord;
       // console.log("chosenWordCounter", chosenWordCounter)
       return (
         <span key={index} className={isHighlighted && chosenWordCounter > 1 ? 'highlighted' : ''}>
