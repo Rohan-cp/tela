@@ -11,19 +11,21 @@ export default function Home({ textDict, source } ) {
 */
   const [isReady, setIsReady] = useState(false)
   const [chosenWord, setChosenWord] = useState('not initialized')
-  const [currPhrase, setCurrPhrase] = useState('none')
+  const [currPhrase, setCurrPhrase] = useState(['none'])
   const [tempValue, setTempValue] = useState('')
 
   useEffect(() => {
     const data = JSON.parse(textDict)
     const keys = Object.keys(data)
-    let currWord =  keys[Math.floor(Math.random() * 700)]
-    while(currWord.length <= 2) {
-      currWord = keys[Math.floor(Math.random() * 700)]
+    let currWord =  keys[Math.floor(Math.random() * 1000)]
+    while (currWord.length <= 2) {
+      currWord = keys[Math.floor(Math.random() * 1000)]
     }
     const sourceText = JSON.parse(source);
     setChosenWord(currWord)
-    setCurrPhrase(sourceText[data[currWord][0]])
+
+    const words = sourceText[data[currWord][0]].split(" ")
+    setCurrPhrase(words)
   }, [])
 
   useEffect(() => {
@@ -31,7 +33,12 @@ export default function Home({ textDict, source } ) {
     const sourceText = JSON.parse(source);
     const hasKey = chosenWord in data
     if (hasKey) {
-      setCurrPhrase(sourceText[data[chosenWord][0]])
+      console.log("found key so should be switching phrase");
+      const desiredSentenceIdxs = data[chosenWord];
+      const n = desiredSentenceIdxs.length;
+      const randomNewIdx = Math.floor(Math.random() * n);
+      const words = sourceText[desiredSentenceIdxs[randomNewIdx]].split(' ');
+      setCurrPhrase(words)
     }
   }, [chosenWord])
 
@@ -55,22 +62,20 @@ export default function Home({ textDict, source } ) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
     setChosenWord(tempValue);
     setTempValue("");
   }
 
-  const words = currPhrase.split(' ');
 
-  const dynamicText = words.map((word, index) => {
-        const isHighlighted = word === chosenWord;
-        console.log("word", word)
-        console.log("chosenWord", chosenWord)
-        return (
-          <span key={index} className={isHighlighted ? 'highlighted' : ''}>
-            {word + " "}
+  const dynamicText = currPhrase.map((word, index) => {
+      const isHighlighted = word === chosenWord;
+      return (
+        <span key={index} className={isHighlighted ? 'highlighted' : ''}>
+          {word + " "}
           </span>
-        );
-      })
+       );
+   })
 
   if (isReady) {
     return (
@@ -89,7 +94,7 @@ export default function Home({ textDict, source } ) {
     <main className="flex min-h-screen flex-col items-center">
       <div className="wrapper">
         <h2>Chosen word is {chosenWord}!</h2>
-        <h2>{currPhrase}</h2>
+        <h2>{dynamicText}</h2>
         <span>Move between passages by typing a word you see on the screen and press enter or pave your own path...</span>
         <span>Press any key to start once it is done loading</span>
         <span>interactive non-linear text explorer that lets you travel static in a uniquely-disconnected path. By providing connections
