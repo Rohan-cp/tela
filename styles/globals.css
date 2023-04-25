@@ -25,3 +25,27 @@ body {
     )
     rgb(var(--background-start-rgb));
 }
+
+.wrapper {
+  display: flex;
+  width: 40%;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 15%;
+
+}
+
+ul {
+  padding-left: 15px;
+  list-style-type: circle;
+}
+
+.prompt-word-input {
+  text-align: center;
+  width: 300px;
+  color: black;
+}
+
+.highlighted {
+  color: yellow;
+}
