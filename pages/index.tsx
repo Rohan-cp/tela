@@ -12,6 +12,7 @@ export default function Home({ textDict, source } ) {
   const [isReady, setIsReady] = useState(false)
   const [showHighlight, setShowHighlight] = useState(false)
   const [chosenWord, setChosenWord] = useState('not initialized')
+  const [chosenWordCounter, setChosenWordCounter] = useState(0)
   const [currPhrase, setCurrPhrase] = useState(['none'])
   const [tempValue, setTempValue] = useState('')
 
@@ -47,11 +48,7 @@ export default function Home({ textDict, source } ) {
     setTempValue(e.target.value)
   }
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    setChosenWord(tempValue);
-    setTempValue("");
+  useEffect(() => {
     const data = JSON.parse(textDict);
     const sourceText = JSON.parse(source);
     const hasKey = chosenWord in data;
@@ -62,23 +59,42 @@ export default function Home({ textDict, source } ) {
       const words = sourceText[desiredSentenceIdxs[randomNewIdx]].split(' ');
       setShowHighlight(true)
       setTimeout(() => {
+        // console.log("chosenWord", chosenWord)
         setShowHighlight(false)
         setCurrPhrase(words);
       }, 2000);
     }
+  }, [chosenWord, chosenWordCounter])
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    // console.log("chosenWord start", chosenWord)
+    setChosenWord(tempValue);
+    setChosenWordCounter(currCounter => currCounter + 1)
+    // console.log("tempValue submitted", tempValue)
+    // console.log("chosenWord after update", chosenWord)
+    setTempValue("");
   }
 
   var regex = /[!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~]/g;
 
-  const dynamicText = currPhrase.map((word, index) => {
+  const [show, setShow] = useState([""])
+
+  useEffect(() => {
+    setShow( currPhrase.map((word, index) => {
       const isHighlighted = word.replace(regex, '') === chosenWord;
-      // console.log("chosenWordCounter", chosenWordCounter)
-      return (
-        <span key={index} className={isHighlighted && showHighlight ? 'highlighted' : ''}>
-          {word + " "}
-          </span>
-       );
+      return isHighlighted && showHighlight ? 'highlighted' : ''
    })
+    )
+  }, [showHighlight])
+  const dynamicText = currPhrase.map((word, index) => {
+      return (
+        <span key={index} className={show[index]}>
+          {word + " "}
+         </span>
+      );
+  })
 
   if (isReady) {
     return (
