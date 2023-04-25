@@ -10,6 +10,7 @@ export default function Home({ textDict, source } ) {
   }, [])
 */
   const [isReady, setIsReady] = useState(false)
+  const [chosenWordCounter, setChosenWordCounter] = useState(0)
   const [chosenWord, setChosenWord] = useState('not initialized')
   const [currPhrase, setCurrPhrase] = useState(['none'])
   const [tempValue, setTempValue] = useState('')
@@ -22,25 +23,11 @@ export default function Home({ textDict, source } ) {
       currWord = keys[Math.floor(Math.random() * 1000)]
     }
     const sourceText = JSON.parse(source);
-    setChosenWord(currWord)
+    setChosenWord(currWord);
 
-    const words = sourceText[data[currWord][0]].split(" ")
-    setCurrPhrase(words)
+    const words = sourceText[data[currWord][0]].split(" ");
+    setCurrPhrase(words);
   }, [])
-
-  useEffect(() => {
-    const data = JSON.parse(textDict)
-    const sourceText = JSON.parse(source);
-    const hasKey = chosenWord in data
-    if (hasKey) {
-      console.log("found key so should be switching phrase");
-      const desiredSentenceIdxs = data[chosenWord];
-      const n = desiredSentenceIdxs.length;
-      const randomNewIdx = Math.floor(Math.random() * n);
-      const words = sourceText[desiredSentenceIdxs[randomNewIdx]].split(' ');
-      setCurrPhrase(words)
-    }
-  }, [chosenWord])
 
 
   useEffect(() => {
@@ -65,13 +52,25 @@ export default function Home({ textDict, source } ) {
 
     setChosenWord(tempValue);
     setTempValue("");
+    const data = JSON.parse(textDict);
+    const sourceText = JSON.parse(source);
+    const hasKey = chosenWord in data;
+    if (hasKey) {
+      const desiredSentenceIdxs = data[chosenWord];
+      const n = desiredSentenceIdxs.length;
+      const randomNewIdx = Math.floor(Math.random() * n);
+      const words = sourceText[desiredSentenceIdxs[randomNewIdx]].split(' ');
+      console.log("found key so should be switching phrase, new words", words);
+      setCurrPhrase(words);
+      setChosenWordCounter(currCounter => currCounter + 1);
+    }
   }
-
 
   const dynamicText = currPhrase.map((word, index) => {
       const isHighlighted = word === chosenWord;
+      // console.log("chosenWordCounter", chosenWordCounter)
       return (
-        <span key={index} className={isHighlighted ? 'highlighted' : ''}>
+        <span key={index} className={isHighlighted && chosenWordCounter > 1 ? 'highlighted' : ''}>
           {word + " "}
           </span>
        );
