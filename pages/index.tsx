@@ -10,7 +10,7 @@ export default function Home({ textDict, source } ) {
   }, [])
 */
   const [isReady, setIsReady] = useState(false)
-  const [chosenWordCounter, setChosenWordCounter] = useState(0)
+  const [showHighlight, setShowHighlight] = useState(false)
   const [chosenWord, setChosenWord] = useState('not initialized')
   const [currPhrase, setCurrPhrase] = useState(['none'])
   const [tempValue, setTempValue] = useState('')
@@ -60,18 +60,21 @@ export default function Home({ textDict, source } ) {
       const n = desiredSentenceIdxs.length;
       const randomNewIdx = Math.floor(Math.random() * n);
       const words = sourceText[desiredSentenceIdxs[randomNewIdx]].split(' ');
-      setCurrPhrase(words);
-      setChosenWordCounter(currCounter => currCounter + 1);
+      setShowHighlight(true)
+      setTimeout(() => {
+        setShowHighlight(false)
+        setCurrPhrase(words);
+      }, 2000);
     }
   }
 
- var regex = /[!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~]/g;
+  var regex = /[!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~]/g;
 
   const dynamicText = currPhrase.map((word, index) => {
       const isHighlighted = word.replace(regex, '') === chosenWord;
       // console.log("chosenWordCounter", chosenWordCounter)
       return (
-        <span key={index} className={isHighlighted && chosenWordCounter > 1 ? 'highlighted' : ''}>
+        <span key={index} className={isHighlighted && showHighlight ? 'highlighted' : ''}>
           {word + " "}
           </span>
        );
