@@ -2,13 +2,6 @@ import { useEffect, useState } from "react"
 
 export default function Home({ textDict, source } ) {
 
-/*
-  const [ backendData, setBackendData ] = useState([{}])
-
-  useEffect(() => {
-     fetch("api").then((res) => res.json()).then(data => console.log("data", data))
-  }, [])
-*/
   const [isReady, setIsReady] = useState(false)
   const [showHighlight, setShowHighlight] = useState(false)
   const [chosenWord, setChosenWord] = useState('not initialized')
@@ -82,12 +75,13 @@ export default function Home({ textDict, source } ) {
   const [show, setShow] = useState([""])
 
   useEffect(() => {
-    setShow( currPhrase.map((word, index) => {
+    setShow( currPhrase.map((word) => {
       const isHighlighted = word.replace(regex, '') === chosenWord;
       return isHighlighted && showHighlight ? 'highlighted' : ''
    })
     )
   }, [showHighlight])
+
   const dynamicText = currPhrase.map((word, index) => {
       return (
         <span key={index} className={show[index]}>
@@ -98,11 +92,14 @@ export default function Home({ textDict, source } ) {
 
   if (isReady) {
     return (
-      <main className="flex min-h-screen flex-col items-center">
-        <div className="wrapper">
+      <main className="flex min-h-screen flex-col">
+        <div id="stars"></div>
+        <div id="stars2"></div>
+        <div id="stars3"></div>
+        <div className="experience-wrapper">
           <h2>{dynamicText}</h2>
           <form onSubmit={handleSubmit}>
-            <input value={tempValue} type="text" onChange={handleChange} className="prompt-word-input"/>
+            <input value={tempValue} type="text" onChange={handleChange} className="prompt-word-input" />
           </form>
         </div>
       </main>
@@ -110,16 +107,18 @@ export default function Home({ textDict, source } ) {
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center">
+    <main className="flex min-h-screen flex-col">
+        <div id="stars"></div>
+        <div id="stars2"></div>
+        <div id="stars3"></div>
       <div className="wrapper">
-        <h2>Chosen word is {chosenWord}!</h2>
-        <h2>{dynamicText}</h2>
+        <h1>Tela</h1>
         <span>Move between passages by typing a word you see on the screen and press enter or pave your own path...</span>
         <span>Press any key to start once it is done loading</span>
-        <span>interactive non-linear text explorer that lets you travel static in a uniquely-disconnected path. By providing connections
+        <span>Tela is an interactive non-linear text explorer that lets you travel static in a uniquely-disconnected path. By providing connections
           between different passages (from even different works) based on keywords and randomness, leading to new narratives and interpretations from the original linear stories
         </span>
-        <span>inspired by exploration into experiencing literature in new ways</span>
+        <span>Inspired by exploration into experiencing literature in new ways</span>
         <span>This experience includes the following texts</span>
         <ul>
           <li>The Master and Margarita by Mikhail Bulgakov</li>
