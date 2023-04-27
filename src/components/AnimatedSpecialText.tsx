@@ -1,13 +1,12 @@
 import { motion } from 'framer-motion';
-import { useState } from 'react';
 
 const AnimatedSpecialText = ({ text, show }) => {
-  const words=text.join(" ").replace(/\n/g, " ").trim().split(" ");
+  const words=text.join(" ").replace(/\n/g, " ").split(" ");
 
   console.log("text", text);
   return (
     <motion.div
-      style={{ overflow: "visible", display: "flex", fontSize: "2rem", flexWrap: "wrap"}}
+      style={{ overflow: "hidden", display: "flex", fontSize: "1.3rem", flexWrap: "wrap" }}
     >
       {words.map((word, index) => (
         <motion.span
