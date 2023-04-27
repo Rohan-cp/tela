@@ -1,20 +1,19 @@
 import { useEffect, useState } from "react";
 import useSound from 'use-sound';
+import AnimatedSpecialText from "@/src/components/AnimatedSpecialText";
 
 export default function Home({ lookupWord, source1, source2 } ) {
 
   const [play] = useSound('/sample.mp3')
-
   const [isReady, setIsReady] = useState(false)
   const [showHighlight, setShowHighlight] = useState(false)
   const [chosenWord, setChosenWord] = useState('not initialized')
   const [chosenWordCounter, setChosenWordCounter] = useState(0)
-  const [currPhrase, setCurrPhrase] = useState(['none'])
+  const [currPhrase, setCurrPhrase] = useState([''])
   const [tempValue, setTempValue] = useState('')
 
 
   useEffect(() => {
-    play()
     const data = JSON.parse(lookupWord)
     const keys = Object.keys(data)
     let currWord =  keys[Math.floor(Math.random() * 1000)]
@@ -34,6 +33,7 @@ export default function Home({ lookupWord, source1, source2 } ) {
     } else {
       words = sourceText1[firstTextValue[0][0]].split(" ")
     }
+    words = words.join(" ").replace(/\n/g, " ").split(" ");
     setCurrPhrase(words);
   }, [])
 
@@ -76,7 +76,7 @@ export default function Home({ lookupWord, source1, source2 } ) {
       const desiredSentenceIdxs = data[chosenWord][newIdx];
       const n = desiredSentenceIdxs.length;
       const randomNewIdx = Math.floor(Math.random() * n);
-      let words;
+      let words: String[];
       if (newIdx === 0) {
         words = sourceText1[desiredSentenceIdxs[randomNewIdx]].split(' ');
       } else {
@@ -86,6 +86,7 @@ export default function Home({ lookupWord, source1, source2 } ) {
       setTimeout(() => {
         // console.log("chosenWord", chosenWord)
         setShowHighlight(false)
+        words = words.join(" ").replace(/\n/g, " ").split(" ");
         setCurrPhrase(words);
       }, 2000);
     }
@@ -124,6 +125,7 @@ console.log("should play before")
       );
   })
 
+  console.log("currPhrase", currPhrase)
   if (isReady) {
     return (
       <main className="flex min-h-screen flex-col">
@@ -131,7 +133,7 @@ console.log("should play before")
         <div id="stars2"></div>
         <div id="stars3"></div>
         <div className="experience-wrapper">
-          <h2>{dynamicText}</h2>
+        <AnimatedSpecialText show={show} text={currPhrase} />
           <form onSubmit={handleSubmit}>
             <input value={tempValue} type="text" onChange={handleChange} className="prompt-word-input" />
           </form>
