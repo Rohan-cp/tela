@@ -40,7 +40,7 @@ ul {
 }
 
 .prompt-word-input {
-  text-align: center;
+  text-align: right;
   width: 300px;
   color: black;
   outline: none;
@@ -56,6 +56,11 @@ ul {
 
 .highlighted {
   color: yellow;
+  font-size: 23px;
+}
+
+.usual {
+  font-size: 18px;
 }
 
 .experience-wrapper {

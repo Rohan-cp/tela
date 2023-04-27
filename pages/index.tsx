@@ -1,6 +1,9 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState } from "react";
+import useSound from 'use-sound';
 
 export default function Home({ lookupWord, source1, source2 } ) {
+
+  const [play] = useSound('/sample.mp3')
 
   const [isReady, setIsReady] = useState(false)
   const [showHighlight, setShowHighlight] = useState(false)
@@ -9,7 +12,9 @@ export default function Home({ lookupWord, source1, source2 } ) {
   const [currPhrase, setCurrPhrase] = useState(['none'])
   const [tempValue, setTempValue] = useState('')
 
+
   useEffect(() => {
+    play()
     const data = JSON.parse(lookupWord)
     const keys = Object.keys(data)
     let currWord =  keys[Math.floor(Math.random() * 1000)]
@@ -62,22 +67,14 @@ export default function Home({ lookupWord, source1, source2 } ) {
       const m2 = firstTextValue[1].length
       let newIdx = 0;
       if (n2 !== 0 && m2 !== 0) {
-      console.log("1")
         newIdx = Math.round(Math.random())
-      } else if (m2 >= 0) {
+      } else if (m2 !== 0) {
         newIdx = 1
-      console.log("2")
       } else {
-      console.log("3")
         newIdx = 0
       }
       const desiredSentenceIdxs = data[chosenWord][newIdx];
       const n = desiredSentenceIdxs.length;
-      console.log("newIdx", newIdx)
-      console.log("firstTextValue", firstTextValue)
-      console.log("n2", n2)
-      console.log("m2", m2)
-      console.log("n", n)
       const randomNewIdx = Math.floor(Math.random() * n);
       let words;
       if (newIdx === 0) {
@@ -98,6 +95,8 @@ export default function Home({ lookupWord, source1, source2 } ) {
     e.preventDefault();
 
     // console.log("chosenWord start", chosenWord)
+    play()
+console.log("should play before")
     setChosenWord(tempValue);
     setChosenWordCounter(currCounter => currCounter + 1)
     // console.log("tempValue submitted", tempValue)
@@ -112,7 +111,7 @@ export default function Home({ lookupWord, source1, source2 } ) {
   useEffect(() => {
     setShow(currPhrase.map((word) => {
       const isHighlighted = word.replace(regex, '') === chosenWord;
-      return isHighlighted && showHighlight ? 'highlighted' : ''
+      return isHighlighted && showHighlight ? 'highlighted' : 'usual'
    })
     )
   }, [showHighlight])
