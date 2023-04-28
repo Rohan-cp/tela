@@ -2,7 +2,14 @@ import { useEffect, useState } from "react";
 import useSound from 'use-sound';
 import AnimatedSpecialText from "@/src/components/AnimatedSpecialText";
 
-export default function Home({ lookupWord, source1, source2 } ) {
+export default function Home({
+    lookupWord,
+    source_kafka,
+    source_master,
+    source_lovecraft1,
+    source_lovecraft2,
+
+} ) {
 
   const [play] = useSound('/sample.mp3')
   const [isReady, setIsReady] = useState(false)
@@ -12,27 +19,47 @@ export default function Home({ lookupWord, source1, source2 } ) {
   const [currPhrase, setCurrPhrase] = useState([''])
   const [tempValue, setTempValue] = useState('')
 
-
   useEffect(() => {
     const data = JSON.parse(lookupWord)
     const keys = Object.keys(data)
-    let currWord =  keys[Math.floor(Math.random() * 1000)]
+    let currWord =  keys[Math.floor(Math.random() * 5000)]
     while (currWord.length <= 2) {
-      currWord = keys[Math.floor(Math.random() * 1000)]
+      currWord = keys[Math.floor(Math.random() * 5000)]
     }
-    const sourceText1 = JSON.parse(source1);
-    const sourceText2 = JSON.parse(source2);
-    setChosenWord(currWord);
-
+  //  setChosenWord(currWord);
+    const sourceKafka = JSON.parse(source_kafka);
+    const sourceMaster = JSON.parse(source_master);
+    const sourceLovecraft1 = JSON.parse(source_lovecraft1);
+    const sourceLovecraft2 = JSON.parse(source_lovecraft2);
+    const sourceCollection = [sourceKafka, sourceMaster, sourceLovecraft1, sourceLovecraft2]
+   // console.log("sourceMaster", sourceMaster)
     const firstTextValue = data[currWord]
-    const n = firstTextValue[0].length
-    const m = firstTextValue[1].length
-    let words = []
-    if (n === 0) {
-      words = sourceText2[firstTextValue[1][0]].split(" ")
-    } else {
-      words = sourceText1[firstTextValue[0][0]].split(" ")
-    }
+    const instancesLength = firstTextValue.map(arr => arr.length || 0)
+    // console.log("currWord", currWord);
+   // console.log("firstTextValue", firstTextValue)
+  //  console.log("instancesLength", instancesLength)
+
+    const positiveInstanceIndicatorArr = instancesLength.map((n, index) => {
+      if (n !== 0) {
+        return index;
+      } else {
+        return -1;
+      }
+    }).filter(a => a !== -1);
+
+    const n = positiveInstanceIndicatorArr.length;
+    const randomNewIdx = Math.floor(Math.random() * n);
+    const nextSourceLookupIdx = positiveInstanceIndicatorArr[randomNewIdx];
+    const sentenceIdxs = firstTextValue[nextSourceLookupIdx];
+
+    // const sentenceIdxs = sourceCollection[nextSourceLookupIdx];
+  //  console.log("positiveInstanceIndicatorArr", positiveInstanceIndicatorArr);
+ //   console.log("nextSourceLookupIdx", nextSourceLookupIdx);
+   // console.log("sentenceIdxs", sentenceIdxs);
+    // const m = sentenceIdxs.length;
+    // const randomSentenceIdx = Math.floor(Math.random() * m)
+    const sourceLookup = sourceCollection[nextSourceLookupIdx];
+    let words = sourceLookup[sentenceIdxs[0]].split(" ")
     words = words.join(" ").replace(/\n/g, " ").split(" ");
     setCurrPhrase(words);
   }, [])
@@ -45,7 +72,6 @@ export default function Home({ lookupWord, source1, source2 } ) {
 
     document.addEventListener('keydown', handleKeyDown);
 
-    // Don't forget to clean up
     return function cleanup() {
       document.removeEventListener('keydown', handleKeyDown);
     }
@@ -57,31 +83,39 @@ export default function Home({ lookupWord, source1, source2 } ) {
 
   useEffect(() => {
     const data = JSON.parse(lookupWord);
-    const sourceText1 = JSON.parse(source1);
-    const sourceText2 = JSON.parse(source2);
+    const sourceKafka = JSON.parse(source_kafka);
+    const sourceMaster = JSON.parse(source_master);
+    const sourceLovecraft1 = JSON.parse(source_lovecraft1);
+    const sourceLovecraft2 = JSON.parse(source_lovecraft2);
+    const sourceCollection = [sourceKafka, sourceMaster, sourceLovecraft1, sourceLovecraft2]
 
     const hasKey = chosenWord in data;
     if (hasKey) {
       const firstTextValue = data[chosenWord]
-      const n2 = firstTextValue[0].length
-      const m2 = firstTextValue[1].length
-      let newIdx = 0;
-      if (n2 !== 0 && m2 !== 0) {
-        newIdx = Math.round(Math.random())
-      } else if (m2 !== 0) {
-        newIdx = 1
-      } else {
-        newIdx = 0
-      }
-      const desiredSentenceIdxs = data[chosenWord][newIdx];
-      const n = desiredSentenceIdxs.length;
+      const instancesLength = firstTextValue.map(arr => arr.length || 0)
+      const positiveInstanceIndicatorArr = instancesLength.map((n, index) => {
+        if (n !== 0) {
+          return index;
+        } else {
+          return -1;
+        }
+      }).filter(a => a !== -1);
+
+    console.log("chosenWord", chosenWord);
+    console.log("firstTextValue", firstTextValue)
+    console.log("instancesLength", instancesLength)
+      const n = positiveInstanceIndicatorArr.length;
       const randomNewIdx = Math.floor(Math.random() * n);
-      let words: String[];
-      if (newIdx === 0) {
-        words = sourceText1[desiredSentenceIdxs[randomNewIdx]].split(' ');
-      } else {
-        words = sourceText2[desiredSentenceIdxs[randomNewIdx]].split(' ');
-      }
+      const nextSourceLookupIdx = positiveInstanceIndicatorArr[randomNewIdx];
+      const sentenceIdxs = firstTextValue[nextSourceLookupIdx];
+      const m = sentenceIdxs.length;
+      const randomSentenceIdx = Math.floor(Math.random() * m)
+      const sourceLookup = sourceCollection[nextSourceLookupIdx]
+
+    console.log("positiveInstanceIndicatorArr", positiveInstanceIndicatorArr);
+    console.log("nextSourceLookupIdx", nextSourceLookupIdx);
+    console.log("sentenceIdxs", sentenceIdxs);
+      let words = sourceLookup[sentenceIdxs[randomSentenceIdx]].split(" ")
       setShowHighlight(true)
       setTimeout(() => {
         // console.log("chosenWord", chosenWord)
@@ -95,13 +129,9 @@ export default function Home({ lookupWord, source1, source2 } ) {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // console.log("chosenWord start", chosenWord)
     play()
-console.log("should play before")
     setChosenWord(tempValue);
     setChosenWordCounter(currCounter => currCounter + 1)
-    // console.log("tempValue submitted", tempValue)
-    // console.log("chosenWord after update", chosenWord)
     setTempValue("");
   }
 
@@ -154,14 +184,14 @@ console.log("should play before")
           between different passages (from even different works) based on keywords and randomness, leading to new narratives and interpretations from the original linear stories.
         </span>
         <span>Inspired by my exploration into experiencing literature in new ways.</span>
+        <div>
         <span>This experience includes the following texts:</span>
-        <ul>
-          <li>The Master and Margarita by Mikhail Bulgakov</li>
-          <li>Oedipus the King by Sophocles</li>
-          <li>Short Stories by H.P Lovecraft</li>
-          <li>The Trial by Franz Kafka</li>
-          <li>The Castle by Franz Kafka</li>
-        </ul>
+          <ul>
+            <li>The Master & Margarita by Mikhail Bulgakov</li>
+            <li>Kafka on the Shore by Haruki Murakami</li>
+            <li>Selected Short Stories by H.P Lovecraft</li>
+          </ul>
+        </div>
       </div>
     </main>
   )
@@ -171,20 +201,28 @@ export async function getStaticProps() {
   // Call an external API endpoint to get posts.
   // You can use any data fetching library
   const lookup = await import('../data/lookup.json');
-  const sourceText = await import('../data/trial_text.json');
-  const sourceText2 = await import('../data/kafka_shore_text.json');
-//  console.log("data and type:", textData["devotion"], typeof textData["devotion"]);
+  const source_kafka_json = await import('../data/kafka-shore.json');
+  const source_master_json = await import('../data/master.json');
+  const source_lovecraft1_json = await import('../data/lovecraft1.json');
+  const source_lovecraft2_json = await import('../data/lovecraft2.json');
+
+
+  const source_kafka = JSON.stringify(source_kafka_json);
+  const source_master = JSON.stringify(source_master_json);
+  const source_lovecraft1 = JSON.stringify(source_lovecraft1_json);
+  const source_lovecraft2 = JSON.stringify(source_lovecraft2_json);
+
   const lookupWord = JSON.stringify(lookup);
-  const source1 = JSON.stringify(sourceText);
-  const source2 = JSON.stringify(sourceText2);
 
   // By returning { props: { posts } }, the Blog component
   // will receive `posts` as a prop at build time
   return {
     props: {
       lookupWord,
-      source1,
-      source2
+      source_kafka,
+      source_master,
+      source_lovecraft1,
+      source_lovecraft2,
     },
   }
 }
