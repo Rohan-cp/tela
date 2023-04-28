@@ -160,7 +160,7 @@ export default function Home({
       <div className="wrapper">
         <div style={{display: "flex", flexDirection: "column"}}>
           <span className="title">TELA</span>
-          <span className="subtitle" >by Rohan Prashanth</span>
+          <span className="subtitle" >by rohan prashanth</span>
         </div>
         <span>Move between passages by typing a word you see on the screen and hit enter or pave your own path.</span>
         <span>Hit any key to start.</span>
