@@ -158,7 +158,10 @@ export default function Home({
         <div id="stars2"></div>
         <div id="stars3"></div>
       <div className="wrapper">
-        <span className="title">TELA</span>
+        <div style={{display: "flex", flexDirection: "column"}}>
+          <span className="title">TELA</span>
+          <span className="subtitle" >by Rohan Prashanth</span>
+        </div>
         <span>Move between passages by typing a word you see on the screen and hit enter or pave your own path.</span>
         <span>Tela is an interactive non-linear text explorer that lets you travel static text in a uniquely-disconnected path. By providing connections
           between different passages (from even different works) based on keywords and randomness, leading to new narratives and interpretations from the original linear stories.
