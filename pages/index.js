@@ -163,6 +163,7 @@ export default function Home({
           <span className="subtitle" >by Rohan Prashanth</span>
         </div>
         <span>Move between passages by typing a word you see on the screen and hit enter or pave your own path.</span>
+        <span>Hit any key to start.</span>
         <span>Tela is an interactive non-linear text explorer that lets you travel static text in a uniquely-disconnected path. By providing connections
           between different passages (from even different works) based on keywords and randomness, new narratives and interpretations from the original linear stories may emerge.
         </span>
