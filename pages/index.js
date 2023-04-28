@@ -124,17 +124,6 @@ export default function Home({
   }
 
 
-  const [show, setShow] = useState([""])
-
-  useEffect(() => {
-    const regex = /[!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~]/g;
-    setShow(currPhrase.map((word) => {
-      const isHighlighted = word.replace(regex, '') === chosenWord;
-      return isHighlighted && showHighlight ? 'highlighted' : 'usual'
-   })
-    )
-  }, [showHighlight, currPhrase, chosenWord])
-
   // console.log("currPhrase", currPhrase)
   if (isReady) {
     return (
@@ -143,7 +132,7 @@ export default function Home({
         <div id="stars2"></div>
         <div id="stars3"></div>
         <div className="experience-wrapper">
-        <AnimatedSpecialText show={show} text={currPhrase} />
+        <AnimatedSpecialText text={currPhrase} chosenWord={chosenWord} showHighlight={showHighlight} />
           <form onSubmit={handleSubmit}>
             <input value={tempValue} type="text" onChange={handleChange} className="prompt-word-input" />
           </form>
