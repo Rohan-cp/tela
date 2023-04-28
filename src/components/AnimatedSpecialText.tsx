@@ -1,9 +1,9 @@
 import { motion } from 'framer-motion';
 
 const AnimatedSpecialText = ({ text, show }) => {
-  const words=text.join(" ").replace(/\n/g, " ").split(" ");
+  const words=text.join(" ").replace(/\n/g, " ").split(" ").filter(word => word !== " ");
 
-  console.log("text", text);
+  // console.log("text", text);
   return (
     <motion.div
       style={{ overflow: "hidden", display: "flex", fontSize: "1.3rem", flexWrap: "wrap" }}
@@ -20,7 +20,7 @@ const AnimatedSpecialText = ({ text, show }) => {
           }}
           className={show[index]}
         >
-          {word}
+          {word.trim()}
         </motion.span>
       ))}
     </motion.div>
