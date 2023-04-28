@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import useSound from 'use-sound';
-import AnimatedSpecialText from "@/src/components/AnimatedSpecialText";
+import AnimatedSpecialText from "../src/components/AnimatedSpecialText";
 
 export default function Home({
     lookupWord,
@@ -11,7 +11,7 @@ export default function Home({
 
 } ) {
 
-  const [play] = useSound('/sample.mp3')
+  const [play] = useSound('/typewriter-one-hit.mp3')
   const [isReady, setIsReady] = useState(false)
   const [showHighlight, setShowHighlight] = useState(false)
   const [chosenWord, setChosenWord] = useState('not initialized')
@@ -26,18 +26,13 @@ export default function Home({
     while (currWord.length <= 2) {
       currWord = keys[Math.floor(Math.random() * 5000)]
     }
-  //  setChosenWord(currWord);
     const sourceKafka = JSON.parse(source_kafka);
     const sourceMaster = JSON.parse(source_master);
     const sourceLovecraft1 = JSON.parse(source_lovecraft1);
     const sourceLovecraft2 = JSON.parse(source_lovecraft2);
     const sourceCollection = [sourceKafka, sourceMaster, sourceLovecraft1, sourceLovecraft2]
-   // console.log("sourceMaster", sourceMaster)
     const firstTextValue = data[currWord]
     const instancesLength = firstTextValue.map(arr => arr.length || 0)
-    // console.log("currWord", currWord);
-   // console.log("firstTextValue", firstTextValue)
-  //  console.log("instancesLength", instancesLength)
 
     const positiveInstanceIndicatorArr = instancesLength.map((n, index) => {
       if (n !== 0) {
@@ -52,17 +47,11 @@ export default function Home({
     const nextSourceLookupIdx = positiveInstanceIndicatorArr[randomNewIdx];
     const sentenceIdxs = firstTextValue[nextSourceLookupIdx];
 
-    // const sentenceIdxs = sourceCollection[nextSourceLookupIdx];
-  //  console.log("positiveInstanceIndicatorArr", positiveInstanceIndicatorArr);
- //   console.log("nextSourceLookupIdx", nextSourceLookupIdx);
-   // console.log("sentenceIdxs", sentenceIdxs);
-    // const m = sentenceIdxs.length;
-    // const randomSentenceIdx = Math.floor(Math.random() * m)
     const sourceLookup = sourceCollection[nextSourceLookupIdx];
-    let words = sourceLookup[sentenceIdxs[0]].split(" ")
-    words = words.join(" ").replace(/\n/g, " ").split(" ");
-    setCurrPhrase(words);
-  }, [])
+    const cleanSentence = sourceLookup[sentenceIdxs[0]].replace(/\n/g, " ");
+    const cleanWords = cleanSentence.split(" ");
+    setCurrPhrase(cleanWords);
+  }, [lookupWord, source_kafka, source_master, source_lovecraft1, source_lovecraft2])
 
 
   useEffect(() => {
@@ -101,9 +90,6 @@ export default function Home({
         }
       }).filter(a => a !== -1);
 
-    console.log("chosenWord", chosenWord);
-    console.log("firstTextValue", firstTextValue)
-    console.log("instancesLength", instancesLength)
       const n = positiveInstanceIndicatorArr.length;
       const randomNewIdx = Math.floor(Math.random() * n);
       const nextSourceLookupIdx = positiveInstanceIndicatorArr[randomNewIdx];
@@ -112,10 +98,12 @@ export default function Home({
       const randomSentenceIdx = Math.floor(Math.random() * m)
       const sourceLookup = sourceCollection[nextSourceLookupIdx]
 
-    console.log("positiveInstanceIndicatorArr", positiveInstanceIndicatorArr);
-    console.log("nextSourceLookupIdx", nextSourceLookupIdx);
-    console.log("sentenceIdxs", sentenceIdxs);
-      let words = sourceLookup[sentenceIdxs[randomSentenceIdx]].split(" ")
+      const selectedSentenceIdx = sentenceIdxs[randomSentenceIdx];
+      let words = sourceLookup[selectedSentenceIdx].split(" ")
+      if (words.length < 25) {
+        words = words.concat(sourceLookup[selectedSentenceIdx + 1])
+      }
+      console.log("words after", words)
       setShowHighlight(true)
       setTimeout(() => {
         // console.log("chosenWord", chosenWord)
@@ -124,7 +112,7 @@ export default function Home({
         setCurrPhrase(words);
       }, 2000);
     }
-  }, [chosenWord, chosenWordCounter])
+  }, [chosenWord, chosenWordCounter, lookupWord, source_kafka, source_master, source_lovecraft1, source_lovecraft2])
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -135,27 +123,19 @@ export default function Home({
     setTempValue("");
   }
 
-  var regex = /[!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~]/g;
 
   const [show, setShow] = useState([""])
 
   useEffect(() => {
+    const regex = /[!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~]/g;
     setShow(currPhrase.map((word) => {
       const isHighlighted = word.replace(regex, '') === chosenWord;
       return isHighlighted && showHighlight ? 'highlighted' : 'usual'
    })
     )
-  }, [showHighlight])
+  }, [showHighlight, currPhrase, chosenWord])
 
-  const dynamicText = currPhrase.map((word, index) => {
-      return (
-        <span key={index} className={show[index]}>
-          {word + " "}
-         </span>
-      );
-  })
-
-  console.log("currPhrase", currPhrase)
+  // console.log("currPhrase", currPhrase)
   if (isReady) {
     return (
       <main className="flex min-h-screen flex-col">
@@ -189,7 +169,7 @@ export default function Home({
           <ul>
             <li>The Master & Margarita by Mikhail Bulgakov</li>
             <li>Kafka on the Shore by Haruki Murakami</li>
-            <li>Selected Short Stories by H.P Lovecraft</li>
+            <li>Selected Short Stories by H.P. Lovecraft</li>
           </ul>
         </div>
       </div>
